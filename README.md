@@ -78,3 +78,21 @@ Output:
 ```
 {"inflow": {"salary": "2500.72", "savings": "150.72"}, "outflow": {"groceries": "-51.13", "rent": "-560.00", "transfer": "-150.72"}}
 ```
+
+
+## Run
+```shell script
+docker-compose up -d --build
+```
+
+Check the API with http://127.0.0.1:8000/_check
+
+
+## Documentation
+
+http://127.0.0.1:8000/docs
+
+## Tests
+```shell script
+docker-compose exec api pytest -vvv .
+```
