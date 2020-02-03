@@ -7,8 +7,18 @@ from sqlalchemy.orm import sessionmaker
 engine = create_engine(os.getenv("DATABASE_URL"))
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-session = SessionLocal
 
 Base = declarative_base()
 
-Base.metadata.create_all(bind=engine)
+
+# Dependency
+def get_db() -> SessionLocal:
+    try:
+        db = SessionLocal()
+        yield db
+    finally:
+        db.close()
+
+
+from .user import User
+from .transaction import Transaction
