@@ -1,3 +1,4 @@
+from datetime import date
 from typing import List
 
 from fastapi import APIRouter
@@ -42,9 +43,12 @@ def post_transactions(
 def get_summary_by_account(
         *,
         db_session: Session = Depends(get_db),
-        user_id: int
+        user_id: int,
+        start_date: date = None,
+        end_date: date = None,
 ) -> TransactionSummaryByAccount:
-    return Transaction.get_summary_by_account(db_session=db_session, user_id=user_id)
+    return Transaction.get_summary_by_account(db_session=db_session, user_id=user_id, start_date=start_date,
+                                              end_date=end_date)
 
 
 @api_v1_transactions.get('/{user_id}/summary_by_category', response_model=TransactionSummaryByCategory,
@@ -52,6 +56,9 @@ def get_summary_by_account(
 def get_summary_by_category(
         *,
         db_session: Session = Depends(get_db),
-        user_id: int
+        user_id: int,
+        start_date: date = None,
+        end_date: date = None,
 ) -> TransactionSummaryByCategory:
-    return Transaction.get_summary_by_category(db_session=db_session, user_id=user_id)
+    return Transaction.get_summary_by_category(db_session=db_session, user_id=user_id, start_date=start_date,
+                                               end_date=end_date)

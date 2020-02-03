@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import date
 from datetime import datetime
 
 from sqlalchemy import Column
@@ -97,7 +98,6 @@ class Transaction(database.Base):
         for t in transactions.transactions:
             if Transaction.get_transaction_by_reference(db_session=db_session, reference=t.reference) is None:
                 transaction = TransactionPost(
-                    user_id=user_id,
                     reference=t.reference,
                     account=t.account,
                     date=t.date,
@@ -130,21 +130,55 @@ class Transaction(database.Base):
         return db_session.query(cls).filter(cls.reference == reference).first()
 
     @classmethod
+    def get_transaction_by_user_id_date_range(
+            cls,
+            db_session: Session,
+            user_id: int,
+            start_date: date = None,
+            end_date: date = None,
+    ):
+        """
+        Get transactions by user and with filters by date range.
+
+        :param Session db_session: database session
+        :param int user_id: ID of the user
+        :param date start_date: filter date start
+        :param date end_date: filter date end
+        :return list: list of transactions
+        """
+        query = db_session.query(cls).filter(cls.user_id == user_id)
+
+        if start_date is not None:
+            query = query.filter(cls.date >= start_date)
+
+        if end_date is not None:
+            query = query.filter(cls.date <= end_date)
+
+        return query.all()
+
+    @classmethod
     def get_summary_by_account(
             cls,
             db_session: Session,
             user_id: int,
+            start_date: date = None,
+            end_date: date = None,
     ):
         """
         Get the summary by accounts of all user's transactions.
 
         :param Session db_session: database session
         :param int user_id: id of the user
+        :param date start_date: filter start date
+        :param date end_date: filter end date
         :return list: references
         """
-        transactions = db_session.query(cls) \
-            .filter(cls.user_id == user_id) \
-            .all()
+        transactions = Transaction.get_transaction_by_user_id_date_range(
+            db_session=db_session,
+            user_id=user_id,
+            start_date=start_date,
+            end_date=end_date
+        )
 
         summary = defaultdict(list)
         for transaction in transactions:
@@ -175,17 +209,24 @@ class Transaction(database.Base):
             cls,
             db_session: Session,
             user_id: int,
+            start_date: date = None,
+            end_date: date = None,
     ):
         """
         Get the summary by category of all user's transactions.
 
         :param Session db_session: database session
         :param int user_id: id of the user
+        :param date start_date: filter start date
+        :param date end_date: filter end date
         :return list: references
         """
-        transactions = db_session.query(cls) \
-            .filter(cls.user_id == user_id) \
-            .all()
+        transactions = Transaction.get_transaction_by_user_id_date_range(
+            db_session=db_session,
+            user_id=user_id,
+            start_date=start_date,
+            end_date=end_date
+        )
 
         summary = defaultdict(list)
         for transaction in transactions:

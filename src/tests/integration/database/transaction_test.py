@@ -1,4 +1,4 @@
-from datetime import date
+import pytest
 
 from database import Transaction
 from database import User
@@ -31,7 +31,7 @@ def test_transaction_create_bulk_ok(session, new_user):
     data_1 = TransactionPost(
         reference='reference1',
         account='account',
-        date=date.today(),
+        date='2020-02-02',
         amount=1.00,
         type='inflow',
         category='category',
@@ -39,7 +39,7 @@ def test_transaction_create_bulk_ok(session, new_user):
     data_2 = TransactionPost(
         reference='reference2',
         account='account',
-        date=date.today(),
+        date='2020-02-02',
         amount=1.00,
         type='inflow',
         category='category',
@@ -59,7 +59,7 @@ def test_transaction_create_bulk_reference_duplicated(session, new_user):
     data_1 = TransactionPost(
         reference='reference1',
         account='account',
-        date=date.today(),
+        date='2020-02-02',
         amount=1.00,
         type='inflow',
         category='category',
@@ -81,6 +81,20 @@ def test_transaction_get_transaction_by_reference_ok(session, new_transaction):
 
 def test_transaction_get_transaction_by_reference_not_exists(session):
     assert Transaction.get_transaction_by_reference(db_session=session, reference='not_exists') is None
+
+
+@pytest.mark.parametrize('start_date, end_date, expected',
+                         [(None, None, 5),
+                          ('2000-01-01', '2000-01-02', 0),
+                          ('2020-01-10', '2020-01-10', 3)])
+def test_transaction_get_transaction_by_user_id_date_range(session, new_user, scenario, start_date, end_date,
+                                                           expected):
+    assert len(Transaction.get_transaction_by_user_id_date_range(
+        db_session=session,
+        user_id=new_user.id,
+        start_date=start_date,
+        end_date=end_date,
+    )) == expected
 
 
 def test_transaction_get_summary_by_account_empty(session, new_user):

@@ -1,5 +1,4 @@
 import os
-from datetime import date
 
 import pytest
 from sqlalchemy import create_engine
@@ -90,7 +89,7 @@ def data_transaction():
     return dict(
         reference='reference',
         account='account',
-        date=date.today().strftime("%Y-%m-%d"),
+        date='2020-02-02',
         amount=1.00,
         type='inflow',
         category='category',

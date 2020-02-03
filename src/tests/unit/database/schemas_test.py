@@ -1,5 +1,3 @@
-from datetime import date
-
 import pytest
 from pydantic import ValidationError
 
@@ -33,7 +31,7 @@ def test_transaction_post_ok():
     assert TransactionPost(
         reference='reference',
         account='account',
-        date=date.today().strftime("%Y-%m-%d"),
+        date='2020-02-02',
         amount=1.00,
         type='inflow',
         category='category',
@@ -46,7 +44,7 @@ def test_transaction_post_reference_wrong(reference):
         TransactionPost(
             reference=reference,
             account='account',
-            date=date.today().strftime("%Y-%m-%d"),
+            date='2020-02-02',
             amount=1.00,
             type='inflow',
             category='category',
@@ -59,7 +57,7 @@ def test_transaction_post_account_wrong(account):
         TransactionPost(
             reference='reference',
             account=account,
-            date=date.today(),
+            date='2020-02-02',
             amount=1.00,
             type='inflow',
             category='category',
@@ -85,7 +83,7 @@ def test_transaction_post_amount_wrong(amount):
         TransactionPost(
             reference='reference',
             account='account',
-            date=date.today(),
+            date='2020-02-02',
             amount=amount,
             type='inflow',
             category='category',
@@ -98,7 +96,7 @@ def test_transaction_post_amount_wrong(type):
         TransactionPost(
             reference='reference',
             account='account',
-            date=date.today(),
+            date='2020-02-02',
             amount=1.00,
             type=type,
             category='category',
@@ -111,7 +109,7 @@ def test_transaction_post_category_wrong(category):
         TransactionPost(
             reference='reference',
             account='account',
-            date=date.today(),
+            date='2020-02-02',
             amount=1.00,
             type='inflow',
             category=category,
