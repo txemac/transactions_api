@@ -44,7 +44,10 @@ def test_transaction_create_bulk_ok(session, new_user):
         type='inflow',
         category='category',
     )
-    data = TransactionPostList(transactions=[data_1, data_2])
+    data = TransactionPostList(
+        name=new_user.name,
+        transactions=[data_1, data_2]
+    )
     Transaction.create_bulk(
         db_session=session,
         user_id=new_user.id,
@@ -64,7 +67,10 @@ def test_transaction_create_bulk_reference_duplicated(session, new_user):
         type='inflow',
         category='category',
     )
-    data = TransactionPostList(transactions=[data_1, data_1])
+    data = TransactionPostList(
+        name=new_user.name,
+        transactions=[data_1, data_1]
+    )
     Transaction.create_bulk(
         db_session=session,
         user_id=new_user.id,

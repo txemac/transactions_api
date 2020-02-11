@@ -155,7 +155,10 @@ def scenario(session, new_user):
         type='inflow',
         category='savings'
     )
-    data = TransactionPostList(transactions=[data_1, data_2, data_3, data_4, data_5])
+    data = TransactionPostList(
+        name='test',
+        transactions=[data_1, data_2, data_3, data_4, data_5]
+    )
     Transaction.create_bulk(
         db_session=session,
         user_id=new_user.id,

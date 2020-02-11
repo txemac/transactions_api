@@ -41,6 +41,7 @@ class TransactionGet(TransactionPost):
 
 
 class TransactionPostList(BaseModel):
+    name: str
     transactions: List[TransactionPost]
 
 

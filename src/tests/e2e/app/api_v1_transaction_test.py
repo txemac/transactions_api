@@ -7,22 +7,31 @@ from app import messages
 
 
 def test_post_transactions_ok(client, new_user, data_transaction):
-    data = dict(transactions=[data_transaction])
-    response = client.post(f"/api/v1/transactions/{new_user.id}", json=data)
+    data = dict(
+        name=new_user.name,
+        transactions=[data_transaction]
+    )
+    response = client.post(f"/api/v1/transactions/", json=data)
     assert response.status_code == HTTP_201_CREATED
     assert len(response.json()) == 1
 
 
 def test_post_transactions_reference_already_exists(client, new_user, new_transaction, data_transaction):
-    data = dict(transactions=[data_transaction])
-    response = client.post(f"/api/v1/transactions/{new_user.id}", json=data)
+    data = dict(
+        name=new_user.name,
+        transactions=[data_transaction]
+    )
+    response = client.post(f"/api/v1/transactions/", json=data)
     assert response.status_code == HTTP_201_CREATED
     assert len(response.json()) == 0
 
 
 def test_post_transactions_reference_duplicated(client, new_user, data_transaction):
-    data = dict(transactions=[data_transaction, data_transaction])
-    response = client.post(f"/api/v1/transactions/{new_user.id}", json=data)
+    data = dict(
+        name=new_user.name,
+        transactions=[data_transaction, data_transaction]
+    )
+    response = client.post(f"/api/v1/transactions/", json=data)
     assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.json()['detail'] == messages.TRANSACTIONS_REFERENCES_ERROR
 
@@ -33,8 +42,11 @@ def test_post_transactions_reference_duplicated(client, new_user, data_transacti
 def test_post_transactions_amount_wrong(client, new_user, data_transaction, type, amount):
     data_transaction['type'] = type
     data_transaction['amount'] = amount
-    data = dict(transactions=[data_transaction])
-    response = client.post(f"/api/v1/transactions/{new_user.id}", json=data)
+    data = dict(
+        name=new_user.name,
+        transactions=[data_transaction]
+    )
+    response = client.post(f"/api/v1/transactions/", json=data)
     assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.json()['detail'] == messages.TRANSACTIONS_AMOUNTS_ERROR
 

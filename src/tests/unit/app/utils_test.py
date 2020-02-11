@@ -8,12 +8,14 @@ from database.schemas import TransactionPostList
 
 @pytest.mark.parametrize('transactions, expected',
                          [(TransactionPostList(
+                             name='test',
                              transactions=[
                                  TransactionPost(reference='a01', account='aaa', date='2020-01-01', amount=1.00,
                                                  type='inflow', category='food'),
                                  TransactionPost(reference='a01', account='aaa', date='2020-01-01', amount=1.00,
                                                  type='inflow', category='food')]), False),
                              (TransactionPostList(
+                                 name='test',
                                  transactions=[
                                      TransactionPost(reference='a01', account='aaa', date='2020-01-01', amount=1.00,
                                                      type='inflow', category='food'),
@@ -26,34 +28,42 @@ def test_check_references(transactions, expected):
 
 @pytest.mark.parametrize('transactions, expected',
                          [(TransactionPostList(
+                             name='test',
                              transactions=[
                                  TransactionPost(reference='a01', account='aaa', date='2020-01-01', amount=1.00,
                                                  type='inflow', category='food')]), True),
                              (TransactionPostList(
+                                 name='test',
                                  transactions=[
                                      TransactionPost(reference='a01', account='aaa', date='2020-01-01', amount=-1.00,
                                                      type='inflow', category='food')]), False),
                              (TransactionPostList(
+                                 name='test',
                                  transactions=[
                                      TransactionPost(reference='a02', account='aaa', date='2020-01-01', amount=0.00,
                                                      type='inflow', category='food')]), True),
                              (TransactionPostList(
+                                 name='test',
                                  transactions=[
                                      TransactionPost(reference='a02', account='aaa', date='2020-01-01', amount=-0.00,
                                                      type='inflow', category='food')]), True),
                              (TransactionPostList(
+                                 name='test',
                                  transactions=[
                                      TransactionPost(reference='a02', account='aaa', date='2020-01-01', amount=1.00,
                                                      type='outflow', category='food')]), False),
                              (TransactionPostList(
+                                 name='test',
                                  transactions=[
                                      TransactionPost(reference='a02', account='aaa', date='2020-01-01', amount=-1.00,
                                                      type='outflow', category='food')]), True),
                              (TransactionPostList(
+                                 name='test',
                                  transactions=[
                                      TransactionPost(reference='a02', account='aaa', date='2020-01-01', amount=0.00,
                                                      type='outflow', category='food')]), True),
                              (TransactionPostList(
+                                 name='test',
                                  transactions=[
                                      TransactionPost(reference='a02', account='aaa', date='2020-01-01', amount=-0.00,
                                                      type='outflow', category='food')]), True)
