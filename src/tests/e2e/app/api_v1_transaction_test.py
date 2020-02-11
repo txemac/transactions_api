@@ -2,6 +2,7 @@ import pytest
 from starlette.status import HTTP_200_OK
 from starlette.status import HTTP_201_CREATED
 from starlette.status import HTTP_400_BAD_REQUEST
+from starlette.status import HTTP_404_NOT_FOUND
 
 from app import messages
 
@@ -51,8 +52,8 @@ def test_post_transactions_amount_wrong(client, new_user, data_transaction, type
     assert response.json()['detail'] == messages.TRANSACTIONS_AMOUNTS_ERROR
 
 
-def test_get_summary_by_account(client, new_user, scenario):
-    response = client.get(f"/api/v1/transactions/{new_user.id}/summary_by_account")
+def test_get_summary_by_account_ok(client, new_user, scenario):
+    response = client.get(f"/api/v1/transactions/summary_by_account?name={new_user.name}")
     assert response.status_code == HTTP_200_OK
     expected = [
         {
@@ -71,8 +72,14 @@ def test_get_summary_by_account(client, new_user, scenario):
     assert response.json() == expected
 
 
-def test_get_summary_by_category(client, new_user, scenario):
-    response = client.get(f"/api/v1/transactions/{new_user.id}/summary_by_category")
+def test_get_summary_by_account_user_not_found(client, new_user, scenario):
+    response = client.get("/api/v1/transactions/summary_by_account?name=hola")
+    assert response.status_code == HTTP_404_NOT_FOUND
+    assert response.json()['detail'] == messages.USER_NOT_FOUND
+
+
+def test_get_summary_by_category_ok(client, new_user, scenario):
+    response = client.get(f"/api/v1/transactions/summary_by_category?name={new_user.name}")
     assert response.status_code == HTTP_200_OK
     expected = {
         "inflow": {
@@ -86,3 +93,9 @@ def test_get_summary_by_category(client, new_user, scenario):
         }
     }
     assert response.json() == expected
+
+
+def test_get_summary_by_category_user_not_found(client, new_user, scenario):
+    response = client.get("/api/v1/transactions/summary_by_category?name=hola")
+    assert response.status_code == HTTP_404_NOT_FOUND
+    assert response.json()['detail'] == messages.USER_NOT_FOUND
