@@ -180,27 +180,22 @@ class Transaction(database.Base):
             end_date=end_date
         )
 
-        summary = defaultdict(list)
-        for transaction in transactions:
-            summary[transaction.account].append(transaction.amount)
-
         result = []
-        for account in summary.keys():
-            row = dict(
-                account=account,
-                balance=0,
-                total_inflow=0,
-                total_outflow=0,
-            )
-
-            for amount in summary[account]:
-                row['balance'] += amount
-                if amount > 0:
-                    row['total_inflow'] += amount
-                elif amount < 0:
-                    row['total_outflow'] += amount
-
-            result.append(row)
+        for transaction in transactions:
+            element = next((item for item in result if item['account'] == transaction.account), None)
+            if element is None:
+                element = dict(
+                    account=transaction.account,
+                    balance=0.0,
+                    total_inflow=0.0,
+                    total_outflow=0.0,
+                )
+                result.append(element)
+            element['balance'] += transaction.amount
+            if transaction.amount > 0:
+                element['total_inflow'] += transaction.amount
+            elif transaction.amount < 0:
+                element['total_outflow'] += transaction.amount
 
         return result
 
@@ -228,18 +223,12 @@ class Transaction(database.Base):
             end_date=end_date
         )
 
-        summary = defaultdict(list)
-        for transaction in transactions:
-            summary[transaction.type].append(transaction)
-
         result = dict(
             inflow=defaultdict(float),
             outflow=defaultdict(float),
         )
-        for transaction in summary['inflow']:
-            result['inflow'][transaction.category] += transaction.amount
 
-        for transaction in summary['outflow']:
-            result['outflow'][transaction.category] += transaction.amount
+        for transaction in transactions:
+            result[transaction.type][transaction.category] += transaction.amount
 
         return result
