@@ -1,6 +1,9 @@
 from collections import defaultdict
 from datetime import date
 from datetime import datetime
+from typing import Dict
+from typing import List
+from typing import Union
 
 from sqlalchemy import Column
 from sqlalchemy import Date
@@ -14,14 +17,13 @@ from sqlalchemy.orm import Session
 
 import database
 from database.schemas import TransactionPost
-from database.schemas import TransactionPostList
 
 
 class Transaction(database.Base):
-    __tablename__ = "transactions"
+    __tablename__ = "transaction"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("user.id"))
     reference = Column(String, unique=True, index=True, nullable=False)
     account = Column(String, nullable=False)
     date = Column(Date, nullable=False)
@@ -82,37 +84,31 @@ class Transaction(database.Base):
     def create_bulk(
             cls,
             db_session: Session,
-            user_id: int,
-            transactions: TransactionPostList,
+            data: List[Dict[str, Union[str, float]]]
     ):
         """
         Create transactions in bulk.
         The transactions with references duplicate will not add.
 
         :param Session db_session: database session
-        :param int user_id: ID of the user
-        :param list transactions: list of transactions
+        :param list data: list of transactions
         :return List: list of transactions
         """
-        result = []
-        for t in transactions.transactions:
-            if Transaction.get_transaction_by_reference(db_session=db_session, reference=t.reference) is None:
-                transaction = TransactionPost(
-                    reference=t.reference,
-                    account=t.account,
-                    date=t.date,
-                    amount=t.amount,
-                    type=t.type,
-                    category=t.category,
-                )
-                t = Transaction.create(
-                    db_session=db_session,
-                    user_id=user_id,
-                    data=transaction,
-                )
-                result.append(t)
+        db_session.bulk_insert_mappings(cls, data)
+        db_session.commit()
 
-        return result
+    @classmethod
+    def get_referencez(
+            cls,
+            db_session: Session,
+    ):
+        """
+        Get all references at database.
+
+        :param Session db_session: database session
+        :return list: references
+        """
+        return [x[0] for x in db_session.query(cls.reference).all()]
 
     @classmethod
     def get_transaction_by_reference(

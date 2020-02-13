@@ -14,7 +14,6 @@ def test_post_transactions_ok(client, new_user, data_transaction):
     )
     response = client.post(f"/api/v1/transactions/", json=data)
     assert response.status_code == HTTP_201_CREATED
-    assert len(response.json()) == 1
 
 
 def test_post_transactions_reference_already_exists(client, new_user, new_transaction, data_transaction):
@@ -24,17 +23,6 @@ def test_post_transactions_reference_already_exists(client, new_user, new_transa
     )
     response = client.post(f"/api/v1/transactions/", json=data)
     assert response.status_code == HTTP_201_CREATED
-    assert len(response.json()) == 0
-
-
-def test_post_transactions_reference_duplicated(client, new_user, data_transaction):
-    data = dict(
-        name=new_user.name,
-        transactions=[data_transaction, data_transaction]
-    )
-    response = client.post(f"/api/v1/transactions/", json=data)
-    assert response.status_code == HTTP_400_BAD_REQUEST
-    assert response.json()['detail'] == messages.TRANSACTIONS_REFERENCES_ERROR
 
 
 @pytest.mark.parametrize('type, amount',

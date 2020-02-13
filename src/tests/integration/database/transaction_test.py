@@ -3,7 +3,6 @@ import pytest
 from database import Transaction
 from database import User
 from database.schemas import TransactionPost
-from database.schemas import TransactionPostList
 
 
 def test_transaction_create_ok(session, data_transaction):
@@ -28,7 +27,8 @@ def test_transaction_create_ok(session, data_transaction):
 
 def test_transaction_create_bulk_ok(session, new_user):
     count1 = session.query(Transaction).count()
-    data_1 = TransactionPost(
+    data_1 = dict(
+        user_id=new_user.id,
         reference='reference1',
         account='account',
         date='2020-02-02',
@@ -36,7 +36,8 @@ def test_transaction_create_bulk_ok(session, new_user):
         type='inflow',
         category='category',
     )
-    data_2 = TransactionPost(
+    data_2 = dict(
+        user_id=new_user.id,
         reference='reference2',
         account='account',
         date='2020-02-02',
@@ -44,40 +45,20 @@ def test_transaction_create_bulk_ok(session, new_user):
         type='inflow',
         category='category',
     )
-    data = TransactionPostList(
-        name=new_user.name,
-        transactions=[data_1, data_2]
-    )
     Transaction.create_bulk(
         db_session=session,
-        user_id=new_user.id,
-        transactions=data
+        data=[data_1, data_2]
     )
     count2 = session.query(Transaction).count()
     assert count1 + 2 == count2
 
 
-def test_transaction_create_bulk_reference_duplicated(session, new_user):
-    count1 = session.query(Transaction).count()
-    data_1 = TransactionPost(
-        reference='reference1',
-        account='account',
-        date='2020-02-02',
-        amount=1.00,
-        type='inflow',
-        category='category',
-    )
-    data = TransactionPostList(
-        name=new_user.name,
-        transactions=[data_1, data_1]
-    )
-    Transaction.create_bulk(
-        db_session=session,
-        user_id=new_user.id,
-        transactions=data
-    )
-    count2 = session.query(Transaction).count()
-    assert count1 + 1 == count2
+def test_get_refecences_empty(session):
+    assert Transaction.get_referencez(db_session=session) == []
+
+
+def test_get_refecences_ok(session, new_transaction):
+    assert Transaction.get_referencez(db_session=session) == [new_transaction.reference]
 
 
 def test_transaction_get_transaction_by_reference_ok(session, new_transaction):

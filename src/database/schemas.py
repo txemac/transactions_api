@@ -23,6 +23,7 @@ class UserGet(UserPost):
 
 
 class TransactionPost(BaseModel):
+    user_id: int = None
     reference: str = Field(..., min_length=3, max_length=150)
     account: str = Field(..., min_length=3, max_length=150)
     date: date

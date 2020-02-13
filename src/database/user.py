@@ -10,7 +10,7 @@ from database.schemas import UserPost
 
 
 class User(database.Base):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)

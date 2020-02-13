@@ -14,7 +14,6 @@ from database import Transaction
 from database import User
 from database import get_db
 from database.schemas import TransactionPost
-from database.schemas import TransactionPostList
 from database.schemas import UserPost
 
 url = f'{os.getenv("DATABASE_URL")}_test'
@@ -115,7 +114,8 @@ def new_transaction(session, new_user, data_transaction):
 
 @pytest.fixture()
 def scenario(session, new_user):
-    data_1 = TransactionPost(
+    data_1 = dict(
+        user_id=new_user.id,
         reference='000051',
         account='C00099',
         date='2020-01-03',
@@ -123,7 +123,8 @@ def scenario(session, new_user):
         type='outflow',
         category='groceries'
     )
-    data_2 = TransactionPost(
+    data_2 = dict(
+        user_id=new_user.id,
         reference='000052',
         account='C00099',
         date='2020-01-10',
@@ -131,7 +132,8 @@ def scenario(session, new_user):
         type='inflow',
         category='salary'
     )
-    data_3 = TransactionPost(
+    data_3 = dict(
+        user_id=new_user.id,
         reference='000053',
         account='C00099',
         date='2020-01-10',
@@ -139,7 +141,8 @@ def scenario(session, new_user):
         type='outflow',
         category='transfer'
     )
-    data_4 = TransactionPost(
+    data_4 = dict(
+        user_id=new_user.id,
         reference='000054',
         account='C00099',
         date='2020-01-13',
@@ -147,7 +150,8 @@ def scenario(session, new_user):
         type='outflow',
         category='rent'
     )
-    data_5 = TransactionPost(
+    data_5 = dict(
+        user_id=new_user.id,
         reference='000689',
         account='S00012',
         date='2020-01-10',
@@ -155,12 +159,7 @@ def scenario(session, new_user):
         type='inflow',
         category='savings'
     )
-    data = TransactionPostList(
-        name='test',
-        transactions=[data_1, data_2, data_3, data_4, data_5]
-    )
     Transaction.create_bulk(
         db_session=session,
-        user_id=new_user.id,
-        transactions=data
+        data=[data_1, data_2, data_3, data_4, data_5]
     )

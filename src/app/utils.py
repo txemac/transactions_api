@@ -1,22 +1,6 @@
 from database.schemas import TransactionPostList
 
 
-def check_references(
-        transactions: TransactionPostList,
-) -> bool:
-    """
-    Check if references are uniques and not duplicated in database.
-
-    :param TransactionPostList transactions: list of transactions
-    :return bool: True if all right
-    """
-    references_data = [t.reference for t in transactions.transactions]
-    if len(references_data) != len(set(references_data)):
-        return False
-
-    return True
-
-
 def check_amounts(
         transactions: TransactionPostList
 ) -> bool:

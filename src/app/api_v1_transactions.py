@@ -12,7 +12,6 @@ from starlette.status import HTTP_404_NOT_FOUND
 
 from app import messages
 from app.utils import check_amounts
-from app.utils import check_references
 from database import Transaction
 from database import User
 from database import get_db
@@ -28,22 +27,26 @@ api_v1_transactions = APIRouter()
 def post_transactions(
         *,
         db_session: Session = Depends(get_db),
-        data: TransactionPostList
+        payload: TransactionPostList
 ) -> List[TransactionGet]:
-    if not check_references(transactions=data):
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=messages.TRANSACTIONS_REFERENCES_ERROR)
-
-    if not check_amounts(transactions=data):
+    if not check_amounts(transactions=payload):
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=messages.TRANSACTIONS_AMOUNTS_ERROR)
 
-    user = User.get_user_by_name(db_session=db_session, name=data.name)
+    user = User.get_user_by_name(db_session=db_session, name=payload.name)
     if user is None:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=messages.USER_NOT_FOUND)
 
+    data = []
+    references_db = Transaction.get_referencez(db_session=db_session)
+    for transaction in payload.transactions:
+        if transaction.reference not in references_db:
+            transaction.user_id = user.id
+            references_db.append(transaction.reference)
+            data.append(dict(transaction))
+
     return Transaction.create_bulk(
         db_session=db_session,
-        user_id=user.id,
-        transactions=data
+        data=data
     )
 
 
