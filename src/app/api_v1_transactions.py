@@ -7,11 +7,9 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_200_OK
 from starlette.status import HTTP_201_CREATED
-from starlette.status import HTTP_400_BAD_REQUEST
 from starlette.status import HTTP_404_NOT_FOUND
 
 from app import messages
-from app.utils import check_amounts
 from database import Transaction
 from database import User
 from database import get_db
@@ -29,9 +27,6 @@ def post_transactions(
         db_session: Session = Depends(get_db),
         payload: TransactionPostList
 ) -> List[TransactionGet]:
-    if not check_amounts(transactions=payload):
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=messages.TRANSACTIONS_AMOUNTS_ERROR)
-
     user = User.get_user_by_name(db_session=db_session, name=payload.name)
     if user is None:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=messages.USER_NOT_FOUND)

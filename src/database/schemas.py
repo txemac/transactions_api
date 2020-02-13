@@ -6,6 +6,9 @@ from typing import Literal
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import validator
+
+from app import messages
 
 
 class UserPost(BaseModel):
@@ -27,10 +30,16 @@ class TransactionPost(BaseModel):
     reference: str = Field(..., min_length=3, max_length=150)
     account: str = Field(..., min_length=3, max_length=150)
     date: date
-    amount: float
     type: Literal['inflow', 'outflow']
+    amount: float
     category: str = Field(..., min_length=3, max_length=150)
 
+    @validator('amount')
+    def amount_positive_negative(cls, v, values):
+        if ('type' in values and values['type'] == 'inflow' and v < 0) or \
+                ('type' in values and values['type'] == 'outflow' and v > 0):
+            raise ValueError(messages.TRANSACTIONS_AMOUNTS_ERROR)
+        return v
 
 class TransactionGet(TransactionPost):
     id: int = Field(..., gt=0)

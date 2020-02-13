@@ -1,8 +1,8 @@
 import pytest
 from starlette.status import HTTP_200_OK
 from starlette.status import HTTP_201_CREATED
-from starlette.status import HTTP_400_BAD_REQUEST
 from starlette.status import HTTP_404_NOT_FOUND
+from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
 from app import messages
 
@@ -36,8 +36,8 @@ def test_post_transactions_amount_wrong(client, new_user, data_transaction, type
         transactions=[data_transaction]
     )
     response = client.post(f"/api/v1/transactions/", json=data)
-    assert response.status_code == HTTP_400_BAD_REQUEST
-    assert response.json()['detail'] == messages.TRANSACTIONS_AMOUNTS_ERROR
+    assert response.status_code == HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.json()['detail'][0]['msg'] == messages.TRANSACTIONS_AMOUNTS_ERROR
 
 
 def test_get_summary_by_account_ok(client, new_user, scenario):

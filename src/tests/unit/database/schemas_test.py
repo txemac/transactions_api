@@ -32,8 +32,8 @@ def test_transaction_post_ok():
         reference='reference',
         account='account',
         date='2020-02-02',
-        amount=1.00,
         type='inflow',
+        amount=1.00,
         category='category',
     ) is not None
 
@@ -45,8 +45,8 @@ def test_transaction_post_reference_wrong(reference):
             reference=reference,
             account='account',
             date='2020-02-02',
-            amount=1.00,
             type='inflow',
+            amount=1.00,
             category='category',
         )
 
@@ -58,8 +58,8 @@ def test_transaction_post_account_wrong(account):
             reference='reference',
             account=account,
             date='2020-02-02',
-            amount=1.00,
             type='inflow',
+            amount=1.00,
             category='category',
         )
 
@@ -71,8 +71,8 @@ def test_transaction_post_date_wrong(date):
             reference='reference',
             account='account',
             date=date,
-            amount=1.00,
             type='inflow',
+            amount=1.00,
             category='category',
         )
 
@@ -84,21 +84,21 @@ def test_transaction_post_amount_wrong(amount):
             reference='reference',
             account='account',
             date='2020-02-02',
-            amount=amount,
             type='inflow',
+            amount=amount,
             category='category',
         )
 
 
 @pytest.mark.parametrize('type', ['a', None, 'error', 1])
-def test_transaction_post_amount_wrong(type):
+def test_transaction_post_type_wrong(type):
     with pytest.raises(ValidationError):
         TransactionPost(
             reference='reference',
             account='account',
             date='2020-02-02',
-            amount=1.00,
             type=type,
+            amount=1.00,
             category='category',
         )
 
@@ -110,7 +110,7 @@ def test_transaction_post_category_wrong(category):
             reference='reference',
             account='account',
             date='2020-02-02',
-            amount=1.00,
             type='inflow',
+            amount=1.00,
             category=category,
         )
